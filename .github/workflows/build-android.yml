@@ -34,8 +34,21 @@ jobs:
           cd build
           make -j$(nproc)
 
-      - name: Upload binary artifact
+      - name: Package WCP for Winlator
+        run: |
+          mkdir -p wcp_package/usr/bin
+          cp build/box64 wcp_package/usr/bin/box64
+          cd wcp_package
+          zip -r ../box64-upgraded.wcp .
+
+      - name: Upload raw binary artifact
         uses: actions/upload-artifact@v4
         with:
           name: box64-arm64-android
           path: build/box64
+
+      - name: Upload WCP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: box64-upgraded-wcp
+          path: box64-upgraded.wcp
