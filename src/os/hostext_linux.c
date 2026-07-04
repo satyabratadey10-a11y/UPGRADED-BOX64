@@ -7,6 +7,8 @@
 #ifdef ARM64
 #include <linux/auxvec.h>
 #include <asm/hwcap.h>
+#include <setjmp.h> // Include setjmp.h for flagm testing
+#include <signal.h> // Include signal.h for signal handling
 #endif
 
 #ifdef PPC64LE
@@ -139,6 +141,26 @@ void rv64Detect(void)
 }
 #endif
 
+#ifdef ARM64 // Helper definitions to test flagm support at runtime
+static sigjmp_buf sigbuf_arm64 = {0}; // Jump buffer for arm64 flagm testing
+static void detect_sigill_arm64(int sig) // Signal handler for SIGILL
+{ // Open bracket
+    siglongjmp(sigbuf_arm64, 1); // Jump back to setjmp call on SIGILL
+} // Close bracket
+
+static int test_cfinv(void) // Test if CFINV instruction is supported
+{ // Open bracket
+    void (*old)(int) = signal(SIGILL, detect_sigill_arm64); // Register temporary SIGILL handler
+    if(sigsetjmp(sigbuf_arm64, 1)) { // Set jump point
+        signal(SIGILL, old); // Restore old SIGILL handler
+        return 0; // Return 0 if SIGILL was triggered (instruction unsupported)
+    } // Close bracket
+    asm volatile(".inst 0xd504001f" : : : "cc"); // Execute CFINV opcode (cfinv)
+    signal(SIGILL, old); // Restore old SIGILL handler
+    return 1; // Return 1 if instruction executed successfully
+} // Close bracket
+#endif // End of flagm runtime check helpers
+
 #ifdef DYNAREC
 int DetectHostCpuFeatures(void)
 {
@@ -172,8 +194,8 @@ int DetectHostCpuFeatures(void)
             cpuext.uscat = 1;
         #endif
         #ifdef HWCAP_FLAGM
-        if(hwcap&HWCAP_FLAGM)
-            cpuext.flagm = 1;
+        if(hwcap&HWCAP_FLAGM) // Check if HWCAP reports FLAGM support
+            cpuext.flagm = test_cfinv(); // Verify FLAGM via runtime try/catch
         #endif
         unsigned long hwcap2 = real_getauxval(AT_HWCAP2);
         #ifdef HWCAP2_FLAGM2
