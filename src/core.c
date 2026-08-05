@@ -112,8 +112,8 @@ static void openFTrace(void)
     ftrace_name = NULL;
 
     if (p && strlen(p) && p[strlen(p) - 1] == '+') {
-        strncpy(tmp2, p, sizeof(tmp2));
-        tmp2[strlen(p)-1]='\0';
+        snprintf(tmp2, sizeof(tmp2), "%s", p);
+        if (strlen(tmp2) > 0) tmp2[strlen(tmp2)-1]='\0';
         p = tmp2;
         append = 1;
     }
@@ -121,20 +121,19 @@ static void openFTrace(void)
     if (!p || ftrace_opened) return;
     ftrace_opened = 1;
 
-    if (strstr(p, "\%pid")) {
+    if (strstr(p, "%pid")) {
         int next = 0;
         do {
-            strcpy(tmp, p);
-            char* c = strstr(tmp, "%pid");
-            *c = 0; // cut
             char pid[16];
             if (next)
-                sprintf(pid, "%d-%d", GetTID(), next);
+                snprintf(pid, sizeof(pid), "%d-%d", GetTID(), next);
             else
-                sprintf(pid, "%d", GetTID());
-            strcat(tmp, pid);
-            c = strstr(p, "\%pid") + strlen("\%pid");
-            strcat(tmp, c);
+                snprintf(pid, sizeof(pid), "%d", GetTID());
+
+            char* c = strstr(p, "%pid");
+            int prefix_len = c - p;
+            snprintf(tmp, sizeof(tmp), "%.*s%s%s", prefix_len, p, pid, c + strlen("%pid"));
+
             ++next;
         } while (FileExist(tmp, IS_FILE) && !append);
         p = tmp;
