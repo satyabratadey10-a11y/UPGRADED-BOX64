@@ -121,7 +121,7 @@ static void openFTrace(void)
     if (!p || ftrace_opened) return;
     ftrace_opened = 1;
 
-    if (strstr(p, "\%pid")) {
+    if (strstr(p, "%pid")) {
         int next = 0;
         do {
             char pid[16];
@@ -130,9 +130,9 @@ static void openFTrace(void)
             else
                 snprintf(pid, sizeof(pid), "%d", GetTID());
 
-            char* c = strstr(p, "\%pid");
+            char* c = strstr(p, "%pid");
             int prefix_len = c - p;
-            snprintf(tmp, sizeof(tmp), "%.*s%s%s", prefix_len, p, pid, c + strlen("\%pid"));
+            snprintf(tmp, sizeof(tmp), "%.*s%s%s", prefix_len, p, pid, c + strlen("%pid"));
 
             ++next;
         } while (FileExist(tmp, IS_FILE) && !append);
