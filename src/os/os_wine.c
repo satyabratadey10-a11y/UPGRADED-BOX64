@@ -215,7 +215,7 @@ void PrintfFtrace(int prefix, const char* fmt, ...)
     if (prefix) strcpy(p, prefix > 1 ? "[\033[31mBOX64\033[0m] " : "[BOX64] ");
     va_list args;
     va_start(args, fmt);
-    vsprintf(p + strlen(p), fmt, args);
+    vsnprintf(p + strlen(p), sizeof(buf) - (p + strlen(p) - buf), fmt, args);
     va_end(args);
     __wine_dbg_output(p);
 }
