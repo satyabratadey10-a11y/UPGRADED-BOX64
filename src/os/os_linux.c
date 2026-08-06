@@ -229,7 +229,7 @@ void PrintfFtrace(int prefix, const char* fmt, ...)
     }
     va_list args;
     va_start(args, fmt);
-    vsprintf(tmp, fmt, args);
+    vsnprintf(tmp, sizeof(tmp), fmt, args);
     fflush(ftrace);
     va_end(args);
     write(trace_fd, tmp, strlen(tmp));
