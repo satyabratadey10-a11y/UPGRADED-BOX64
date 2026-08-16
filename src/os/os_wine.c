@@ -216,7 +216,9 @@ void PrintfFtrace(int prefix, const char* fmt, ...)
     va_list args;
     va_start(args, fmt);
     size_t len = strlen(p);
-    vsnprintf(p + len, sizeof(buf) - len, fmt, args);
+    if (len < sizeof(buf)) {
+        vsnprintf(p + len, sizeof(buf) - len, fmt, args);
+    }
     va_end(args);
     __wine_dbg_output(p);
 }

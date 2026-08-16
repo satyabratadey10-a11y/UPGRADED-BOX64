@@ -95,7 +95,7 @@ void* GetSegmentBase(void* emu, uint32_t desc)
         printf_log(LOG_NONE, "Warning, accessing segment unknown 0x%x or unset\n", desc);
         return NULL;
     }
-    
+
     base_segment_t* segs = is_ldt?((x64emu_t*)emu)->segldt:((base>5)?((x64emu_t*)emu)->seggdt:my_context->seggdt);
     void* ptr = (void*)segs[base].base;
     return ptr;
@@ -120,19 +120,18 @@ const char* GetNativeName(void* p, int lib)
         const char* ret = GetNameOffset(my_context->maplib, p);
         if (ret)
             return ret;
-        snprintf(native_name, sizeof(native_name), "%s(%p)", "???", p);
+        sprintf(native_name, "%s(%p)", "???", p);
         return native_name;
     } else {
         if (info.dli_sname) {
-            snprintf(native_name, sizeof(native_name), "%s", info.dli_sname);
+            strcpy(native_name, info.dli_sname);
             if (lib && info.dli_fname) {
-                size_t len = strlen(native_name);
-                if (len < sizeof(native_name)) {
-                    snprintf(native_name + len, sizeof(native_name) - len, "(%s)", info.dli_fname);
-                }
+                strcat(native_name, "(");
+                strcat(native_name, info.dli_fname);
+                strcat(native_name, ")");
             }
         } else {
-            snprintf(native_name, sizeof(native_name), "%s(%s+%p)", "???", info.dli_fname, (void*)(p - info.dli_fbase));
+            sprintf(native_name, "%s(%s+%p)", "???", info.dli_fname, (void*)(p - info.dli_fbase));
             return native_name;
         }
     }
