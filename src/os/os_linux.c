@@ -120,18 +120,17 @@ const char* GetNativeName(void* p, int lib)
         const char* ret = GetNameOffset(my_context->maplib, p);
         if (ret)
             return ret;
-        sprintf(native_name, "%s(%p)", "???", p);
+        snprintf(native_name, sizeof(native_name), "%s(%p)", "???", p);
         return native_name;
     } else {
         if (info.dli_sname) {
-            strcpy(native_name, info.dli_sname);
+            snprintf(native_name, sizeof(native_name), "%s", info.dli_sname);
             if (lib && info.dli_fname) {
-                strcat(native_name, "(");
-                strcat(native_name, info.dli_fname);
-                strcat(native_name, ")");
+                size_t len = strlen(native_name);
+                snprintf(native_name + len, sizeof(native_name) - len, "(%s)", info.dli_fname);
             }
         } else {
-            sprintf(native_name, "%s(%s+%p)", "???", info.dli_fname, (void*)(p - info.dli_fbase));
+            snprintf(native_name, sizeof(native_name), "%s(%s+%p)", "???", info.dli_fname, (void*)(p - info.dli_fbase));
             return native_name;
         }
     }
@@ -221,15 +220,15 @@ void PrintfFtrace(int prefix, const char* fmt, ...)
 
     if (prefix && (ftrace == stdout || ftrace == stderr)) {
         if (prefix > 1) {
-            sprintf(tmp, "[\033[31m%s\033[0m] ", names[box64_is32bits]);
+            snprintf(tmp, sizeof(tmp), "[\033[31m%s\033[0m] ", names[box64_is32bits]);
         } else {
-            sprintf(tmp, "[%s] ", names[box64_is32bits]);
+            snprintf(tmp, sizeof(tmp), "[%s] ", names[box64_is32bits]);
         }
         write(trace_fd, tmp, strlen(tmp));
     }
     va_list args;
     va_start(args, fmt);
-    vsprintf(tmp, fmt, args);
+    vsnprintf(tmp, sizeof(tmp), fmt, args);
     fflush(ftrace);
     va_end(args);
     write(trace_fd, tmp, strlen(tmp));
