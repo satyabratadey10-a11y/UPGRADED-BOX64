@@ -219,18 +219,22 @@ void PrintfFtrace(int prefix, const char* fmt, ...)
     static const char* names[2] = { "BOX64", "BOX32" };
 
     char tmp[8192];
+    tmp[0] = '\0';
 
     if (prefix && (ftrace == stdout || ftrace == stderr)) {
         if (prefix > 1) {
-            sprintf(tmp, "[\033[31m%s\033[0m] ", names[box64_is32bits]);
+            snprintf(tmp, sizeof(tmp), "[\033[31m%s\033[0m] ", names[box64_is32bits]);
         } else {
-            sprintf(tmp, "[%s] ", names[box64_is32bits]);
+            snprintf(tmp, sizeof(tmp), "[%s] ", names[box64_is32bits]);
         }
         write(trace_fd, tmp, strlen(tmp));
     }
     va_list args;
     va_start(args, fmt);
-    vsprintf(tmp, fmt, args);
+    size_t len = strlen(tmp);
+    if (len < sizeof(tmp)) {
+        vsnprintf(tmp + len, sizeof(tmp) - len, fmt, args);
+    }
     fflush(ftrace);
     va_end(args);
     write(trace_fd, tmp, strlen(tmp));
