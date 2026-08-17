@@ -2873,7 +2873,6 @@ EXPORT int32_t my_execve(x64emu_t* emu, const char* path, char* const argv[], ch
         sprintf(template, "/proc/self/fd/%d", fd);
         int rl = readlink(template, cpuinfo_file, sizeof(cpuinfo_file));
         close(fd);
-        chmod(cpuinfo_file, 0666);
         newargv[cpuinfo] = cpuinfo_file;
         printf_log(LOG_DEBUG, " => execve(\"%s\", %p [\"%s\", \"%s\", \"%s\"...:%d], %p)\n", path, newargv, newargv[0], newargv[1], newargv[2],n, envp);
         int ret = execve(path, (char* const*)newargv, envp);
@@ -2898,7 +2897,6 @@ EXPORT int32_t my_execve(x64emu_t* emu, const char* path, char* const argv[], ch
         sprintf(template, "/proc/self/fd/%d", fd);
         int rl = readlink(template, cpuinfo_file, sizeof(cpuinfo_file));
         close(fd);
-        chmod(cpuinfo_file, 0666);
         newargv[cpuinfo] = cpuinfo_file;
         printf_log(LOG_DEBUG, " => execve(\"%s\", %p [\"%s\", \"%s\", \"%s\"...:%d], %p)\n", path, newargv, newargv[0], newargv[1], newargv[2],n, envp);
         int ret = execve(path, (char* const*)newargv, envp);
