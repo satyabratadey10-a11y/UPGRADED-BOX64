@@ -2864,13 +2864,13 @@ EXPORT int32_t my_execve(x64emu_t* emu, const char* path, char* const argv[], ch
         memcpy(newargv, argv, sizeof(char*)*(n+1));
         // create a dummy cpuinfo in temp (that will stay there, sorry)
         const char* tmpdir = GetTmpDir();
-        char template[100] = {0};
-        sprintf(template, "%s/box64cpuinfoXXXXXX", tmpdir);
+        char template[MAX_PATH] = {0};
+        snprintf(template, MAX_PATH, "%s/box64cpuinfoXXXXXX", tmpdir);
         int fd = mkstemp(template);
         CreateCPUInfoFile(fd);
         // get back the name
-        char cpuinfo_file[100] = {0};
-        sprintf(template, "/proc/self/fd/%d", fd);
+        char cpuinfo_file[MAX_PATH] = {0};
+        snprintf(template, MAX_PATH, "/proc/self/fd/%d", fd);
         int rl = readlink(template, cpuinfo_file, sizeof(cpuinfo_file));
         close(fd);
         chmod(cpuinfo_file, 0666);
@@ -2889,13 +2889,13 @@ EXPORT int32_t my_execve(x64emu_t* emu, const char* path, char* const argv[], ch
         memcpy(newargv, argv, sizeof(char*)*(n+1));
         // create a dummy cpuinfo in temp (that will stay there, sorry)
         const char* tmpdir = GetTmpDir();
-        char template[100] = {0};
-        sprintf(template, "%s/box64cpuinfoXXXXXX", tmpdir);
+        char template[MAX_PATH] = {0};
+        snprintf(template, MAX_PATH, "%s/box64cpuinfoXXXXXX", tmpdir);
         int fd = mkstemp(template);
         CreateCPUInfoFile(fd);
         // get back the name
-        char cpuinfo_file[100] = {0};
-        sprintf(template, "/proc/self/fd/%d", fd);
+        char cpuinfo_file[MAX_PATH] = {0};
+        snprintf(template, MAX_PATH, "/proc/self/fd/%d", fd);
         int rl = readlink(template, cpuinfo_file, sizeof(cpuinfo_file));
         close(fd);
         chmod(cpuinfo_file, 0666);
