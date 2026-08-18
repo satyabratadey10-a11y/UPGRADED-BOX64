@@ -2057,12 +2057,12 @@ static int isProcSelf(const char *path, const char* w)
     if(strncmp(path, "/proc/", 6)==0) {
         char tmp[64];
         // check if self ....
-        sprintf(tmp, "/proc/self/%s", w);
+        snprintf(tmp, sizeof(tmp), "/proc/self/%s", w);
         if(strcmp((const char*)path, tmp)==0)
             return 1;
         // check if self PID ....
         pid_t pid = getpid();
-        sprintf(tmp, "/proc/%d/%s", pid, w);
+        snprintf(tmp, sizeof(tmp), "/proc/%d/%s", pid, w);
         if(strcmp((const char*)path, tmp)==0)
             return 1;
     }
@@ -2864,13 +2864,13 @@ EXPORT int32_t my_execve(x64emu_t* emu, const char* path, char* const argv[], ch
         memcpy(newargv, argv, sizeof(char*)*(n+1));
         // create a dummy cpuinfo in temp (that will stay there, sorry)
         const char* tmpdir = GetTmpDir();
-        char template[100] = {0};
-        sprintf(template, "%s/box64cpuinfoXXXXXX", tmpdir);
+        char template[1024] = {0};
+        snprintf(template, sizeof(template), "%s/box64cpuinfoXXXXXX", tmpdir);
         int fd = mkstemp(template);
         CreateCPUInfoFile(fd);
         // get back the name
         char cpuinfo_file[100] = {0};
-        sprintf(template, "/proc/self/fd/%d", fd);
+        snprintf(template, sizeof(template), "/proc/self/fd/%d", fd);
         int rl = readlink(template, cpuinfo_file, sizeof(cpuinfo_file));
         close(fd);
         chmod(cpuinfo_file, 0666);
@@ -2889,13 +2889,13 @@ EXPORT int32_t my_execve(x64emu_t* emu, const char* path, char* const argv[], ch
         memcpy(newargv, argv, sizeof(char*)*(n+1));
         // create a dummy cpuinfo in temp (that will stay there, sorry)
         const char* tmpdir = GetTmpDir();
-        char template[100] = {0};
-        sprintf(template, "%s/box64cpuinfoXXXXXX", tmpdir);
+        char template[1024] = {0};
+        snprintf(template, sizeof(template), "%s/box64cpuinfoXXXXXX", tmpdir);
         int fd = mkstemp(template);
         CreateCPUInfoFile(fd);
         // get back the name
         char cpuinfo_file[100] = {0};
-        sprintf(template, "/proc/self/fd/%d", fd);
+        snprintf(template, sizeof(template), "/proc/self/fd/%d", fd);
         int rl = readlink(template, cpuinfo_file, sizeof(cpuinfo_file));
         close(fd);
         chmod(cpuinfo_file, 0666);
