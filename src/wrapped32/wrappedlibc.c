@@ -1577,14 +1577,14 @@ EXPORT int32_t my32_readdir_r(x64emu_t* emu, void* dirp, void* entry, void** res
 static int isProcSelf(const char *path, const char* w)
 {
     if(strncmp(path, "/proc/", 6)==0) {
-        char tmp[64];
+        char tmp[4096];
         // check if self ....
-        sprintf(tmp, "/proc/self/%s", w);
+        snprintf(tmp, sizeof(tmp), "/proc/self/%s", w);
         if(strcmp((const char*)path, tmp)==0)
             return 1;
         // check if self PID ....
         pid_t pid = getpid();
-        sprintf(tmp, "/proc/%d/%s", pid, w);
+        snprintf(tmp, sizeof(tmp), "/proc/%d/%s", pid, w);
         if(strcmp((const char*)path, tmp)==0)
             return 1;
     }

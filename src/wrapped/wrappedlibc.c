@@ -2055,14 +2055,14 @@ static int isProcAny(const char *path, const char* w)
 static int isProcSelf(const char *path, const char* w)
 {
     if(strncmp(path, "/proc/", 6)==0) {
-        char tmp[64];
+        char tmp[4096];
         // check if self ....
-        sprintf(tmp, "/proc/self/%s", w);
+        snprintf(tmp, sizeof(tmp), "/proc/self/%s", w);
         if(strcmp((const char*)path, tmp)==0)
             return 1;
         // check if self PID ....
         pid_t pid = getpid();
-        sprintf(tmp, "/proc/%d/%s", pid, w);
+        snprintf(tmp, sizeof(tmp), "/proc/%d/%s", pid, w);
         if(strcmp((const char*)path, tmp)==0)
             return 1;
     }
@@ -2225,30 +2225,30 @@ void CreateClocksourceFile(int fd)
 void CreateCpuCacheAssoc(int fd, int cpu, int index)
 {
     size_t dummy;
-    char tmp[64];
-    sprintf(tmp, "%d\n", (index>=3)?16:8);  // Random be coherent values...
+    char tmp[4096];
+    snprintf(tmp, sizeof(tmp), "%d\n", (index>=3)?16:8);  // Random be coherent values...
     dummy = write(fd, tmp, strlen(tmp));
     (void)dummy;
 }
 void CreateCpuCacheCoher(int fd, int cpu, int index)
 {
     size_t dummy;
-    char tmp[64];
-    sprintf(tmp, "%d\n", 64);  // Random be coherent values...
+    char tmp[4096];
+    snprintf(tmp, sizeof(tmp), "%d\n", 64);  // Random be coherent values...
     dummy = write(fd, tmp, strlen(tmp));
     (void)dummy;
 }
 void CreateCpuCacheSize(int fd, int cpu, int index)
 {
     size_t dummy;
-    char tmp[64];
+    char tmp[4096];
     int cachesize = 12288;
     switch(index) {
         case 0: cachesize = 32; break;
         case 1: cachesize = 32; break;
         case 2: cachesize = 256; break;
     }
-    sprintf(tmp, "%dK\n", cachesize);  // Random be coherent values...
+    snprintf(tmp, sizeof(tmp), "%dK\n", cachesize);  // Random be coherent values...
     dummy = write(fd, tmp, strlen(tmp));
     (void)dummy;
 }
@@ -2278,8 +2278,8 @@ EXPORT int32_t my_open(x64emu_t* emu, void* pathname, int32_t flags, uint32_t mo
         // special case for self command line...
         #if 0
         char tmpcmdline[200] = {0};
-        char tmpbuff[100] = {0};
-        sprintf(tmpbuff, "%s/cmdlineXXXXXX", getenv("TMP")?getenv("TMP"):".");
+        char tmpbuff[4096] = {0};
+        snprintf(tmpbuff, sizeof(tmpbuff), "%s/cmdlineXXXXXX", getenv("TMP")?getenv("TMP"):".");
         int tmp = mkstemp(tmpbuff);
         int dummy;
         if(tmp<0) return open(pathname, flags, mode);
@@ -2421,8 +2421,8 @@ EXPORT int32_t my_open64(x64emu_t* emu, void* pathname, int32_t flags, uint32_t 
         // special case for self command line...
         #if 0
         char tmpcmdline[200] = {0};
-        char tmpbuff[100] = {0};
-        sprintf(tmpbuff, "%s/cmdlineXXXXXX", getenv("TMP")?getenv("TMP"):".");
+        char tmpbuff[4096] = {0};
+        snprintf(tmpbuff, sizeof(tmpbuff), "%s/cmdlineXXXXXX", getenv("TMP")?getenv("TMP"):".");
         int tmp = mkstemp64(tmpbuff);
         int dummy;
         if(tmp<0) return open64(pathname, flags, mode);
@@ -2864,13 +2864,13 @@ EXPORT int32_t my_execve(x64emu_t* emu, const char* path, char* const argv[], ch
         memcpy(newargv, argv, sizeof(char*)*(n+1));
         // create a dummy cpuinfo in temp (that will stay there, sorry)
         const char* tmpdir = GetTmpDir();
-        char template[100] = {0};
-        sprintf(template, "%s/box64cpuinfoXXXXXX", tmpdir);
+        char template[4096] = {0};
+        snprintf(template, sizeof(template), "%s/box64cpuinfoXXXXXX", tmpdir);
         int fd = mkstemp(template);
         CreateCPUInfoFile(fd);
         // get back the name
         char cpuinfo_file[100] = {0};
-        sprintf(template, "/proc/self/fd/%d", fd);
+        snprintf(template, sizeof(template), "/proc/self/fd/%d", fd);
         int rl = readlink(template, cpuinfo_file, sizeof(cpuinfo_file));
         close(fd);
         chmod(cpuinfo_file, 0666);
@@ -2889,13 +2889,13 @@ EXPORT int32_t my_execve(x64emu_t* emu, const char* path, char* const argv[], ch
         memcpy(newargv, argv, sizeof(char*)*(n+1));
         // create a dummy cpuinfo in temp (that will stay there, sorry)
         const char* tmpdir = GetTmpDir();
-        char template[100] = {0};
-        sprintf(template, "%s/box64cpuinfoXXXXXX", tmpdir);
+        char template[4096] = {0};
+        snprintf(template, sizeof(template), "%s/box64cpuinfoXXXXXX", tmpdir);
         int fd = mkstemp(template);
         CreateCPUInfoFile(fd);
         // get back the name
         char cpuinfo_file[100] = {0};
-        sprintf(template, "/proc/self/fd/%d", fd);
+        snprintf(template, sizeof(template), "/proc/self/fd/%d", fd);
         int rl = readlink(template, cpuinfo_file, sizeof(cpuinfo_file));
         close(fd);
         chmod(cpuinfo_file, 0666);
