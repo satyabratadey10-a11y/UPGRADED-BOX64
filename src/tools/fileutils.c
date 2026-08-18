@@ -212,13 +212,14 @@ void sanitize_mojosetup_gtk_background()
     const char* gtk2_rc = getenv("GTK2_RC_FILES");
     // check if $GTK2_RC_FILES/pixmaps/background.png exist
     char background[1000] = {0};
-    strcpy(background, gtk2_rc);
+    snprintf(background, sizeof(background), "%s", gtk2_rc);
     char* p = strrchr(background, '/'); // remove "/gtkrc"
     // every error will just silently abort
     if(!p)
         return;
     *p = 0;
-    strcat(background, "/pixmaps/background.png");
+    size_t len = strlen(background);
+    snprintf(background + len, sizeof(background) - len, "/pixmaps/background.png");
     if(!FileExist(background, IS_FILE))
         return;
     // now open are read the header of the PNG to grab the width and height
