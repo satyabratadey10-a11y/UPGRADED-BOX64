@@ -127,7 +127,7 @@ const char* GetNativeName(void* p, int lib)
             snprintf(native_name, sizeof(native_name), "%s", info.dli_sname);
             if (lib && info.dli_fname) {
                 size_t len = strlen(native_name);
-                if (len < sizeof(native_name)) {
+                if (len < sizeof(native_name) - 1) {
                     snprintf(native_name + len, sizeof(native_name) - len, "(%s)", info.dli_fname);
                 }
             }
@@ -232,7 +232,7 @@ void PrintfFtrace(int prefix, const char* fmt, ...)
     va_list args;
     va_start(args, fmt);
     size_t len = strlen(tmp);
-    if (len < sizeof(tmp)) {
+    if (len < sizeof(tmp) - 1) {
         vsnprintf(tmp + len, sizeof(tmp) - len, fmt, args);
     }
     fflush(ftrace);
