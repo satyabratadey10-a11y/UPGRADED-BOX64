@@ -52,7 +52,7 @@ static void readCpuinfo(sysinfo_t* info)
     int cpucore = 0;
     while (1) {
         char cpufreq[4096] = { 0 };
-        sprintf(cpufreq, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", cpucore);
+        snprintf(cpufreq, sizeof(cpufreq), "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", cpucore);
         FILE* f = fopen(cpufreq, "r");
         if (!f) break;
         int r;
@@ -168,10 +168,10 @@ fallback:
     }
 
     char str[64];
-    sprintf(str, "%d", (info->ncpu) ? (int)info->ncpu : 1);
+    snprintf(str, sizeof(str), "%d", (info->ncpu) ? (int)info->ncpu : 1);
     setenv("BOX64_SYSINFO_NCPU", str, 1);
     setenv("BOX64_SYSINFO_CPUNAME", info->cpuname, 1);
-    sprintf(str, "%" PRIu64, info->frequency);
+    snprintf(str, sizeof(str), "%" PRIu64, info->frequency);
     setenv("BOX64_SYSINFO_FREQUENCY", str, 1);
     setenv("BOX64_SYSINFO_CACHED", "1", 1);
     return;
