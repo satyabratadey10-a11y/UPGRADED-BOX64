@@ -1,0 +1,4 @@
+## $(date +%Y-%m-%d) - Fix Buffer Overflows from Unbounded Environment Variables
+**Vulnerability:** Found `sprintf` calls using uncontrolled strings (like `getenv("TMP")` and arbitrary file paths in `isProcSelf`) writing into fixed-size stack buffers (e.g., `tmp[64]`, `template[100]`) in both `src/wrapped/wrappedlibc.c` and `src/wrapped32/wrappedlibc.c`.
+**Learning:** Even internal helper functions like `isProcSelf` or temporary file creation routines are susceptible to buffer overflows if they use `sprintf` with variables whose maximum length is not strictly bounded. The `TMP` directory path can be arbitrarily long.
+**Prevention:** Always use `snprintf(buffer, sizeof(buffer), ...)` instead of `sprintf` when writing strings into fixed-size buffers, especially when incorporating external input like environment variables or file paths.
