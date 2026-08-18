@@ -2278,8 +2278,8 @@ EXPORT int32_t my_open(x64emu_t* emu, void* pathname, int32_t flags, uint32_t mo
         // special case for self command line...
         #if 0
         char tmpcmdline[200] = {0};
-        char tmpbuff[100] = {0};
-        sprintf(tmpbuff, "%s/cmdlineXXXXXX", getenv("TMP")?getenv("TMP"):".");
+        char tmpbuff[MAX_PATH] = {0};
+        snprintf(tmpbuff, sizeof(tmpbuff), "%s/cmdlineXXXXXX", getenv("TMP")?getenv("TMP"):".");
         int tmp = mkstemp(tmpbuff);
         int dummy;
         if(tmp<0) return open(pathname, flags, mode);
@@ -2421,8 +2421,8 @@ EXPORT int32_t my_open64(x64emu_t* emu, void* pathname, int32_t flags, uint32_t 
         // special case for self command line...
         #if 0
         char tmpcmdline[200] = {0};
-        char tmpbuff[100] = {0};
-        sprintf(tmpbuff, "%s/cmdlineXXXXXX", getenv("TMP")?getenv("TMP"):".");
+        char tmpbuff[MAX_PATH] = {0};
+        snprintf(tmpbuff, sizeof(tmpbuff), "%s/cmdlineXXXXXX", getenv("TMP")?getenv("TMP"):".");
         int tmp = mkstemp64(tmpbuff);
         int dummy;
         if(tmp<0) return open64(pathname, flags, mode);

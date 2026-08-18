@@ -82,7 +82,7 @@ void CopyCollection(path_collection_t* to, path_collection_t* from)
 void AddPath(const char* path, path_collection_t* collection, int folder)
 {
     char tmp[MAX_PATH];
-    strcpy(tmp, path);
+    snprintf(tmp, sizeof(tmp), "%s", path);
     int l = strlen(tmp);
     // skip empty strings
     if(l) {
@@ -98,7 +98,7 @@ void AddPath(const char* path, path_collection_t* collection, int folder)
 void PrependPath(const char* path, path_collection_t* collection, int folder)
 {
     char tmp[MAX_PATH];
-    strcpy(tmp, path);
+    snprintf(tmp, sizeof(tmp), "%s", path);
     int l = strlen(tmp);
     // skip empty strings
     if(l) {
