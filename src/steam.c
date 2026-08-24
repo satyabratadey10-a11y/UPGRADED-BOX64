@@ -127,7 +127,8 @@ void pressure_vessel(int argc, const char** argv, int nextarg, const char* prog)
     if(runtime) {
         char sniper[MAX_PATH] = {0};
         // build sniper path
-        strcpy(sniper, prog);
+        strncpy(sniper, prog, MAX_PATH - 1);
+        sniper[MAX_PATH - 1] = '\0';
         char* p = strrchr(sniper, '/');
         if(p) {
             *p = '\0';
@@ -141,11 +142,12 @@ void pressure_vessel(int argc, const char** argv, int nextarg, const char* prog)
                     setenv("PATH", buf, 1);
                 }
             }
-            strcat(sniper, "/../../");
-            strcat(sniper, runtime);
+            strncat(sniper, "/../../", MAX_PATH - strlen(sniper) - 1);
+            strncat(sniper, runtime, MAX_PATH - strlen(sniper) - 1);
         } else {
             printf_log(LOG_INFO, "Warning, could not guess sniper runtime path\n");
-            strcpy(sniper, runtime);    // it's wrong...
+            strncpy(sniper, runtime, MAX_PATH - 1);
+            sniper[MAX_PATH - 1] = '\0';
         }
         printf_log(LOG_DEBUG, "pressure-vessel sniper env: %s\n", sniper);
         // TODO: read metadata from sniper folder and analyse [Environment] section
