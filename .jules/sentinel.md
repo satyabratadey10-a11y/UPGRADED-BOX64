@@ -1,0 +1,4 @@
+## 2024-05-18 - Prevent Buffer Overflows with snprintf
+**Vulnerability:** Unbounded `sprintf` calls were used in `src/elfs/elfloader.c` to write formatted strings (like memory map lines and symbol names) into fixed-size buffers (`buff` [1024 bytes] and `rets` [1000 bytes]). This could lead to buffer overflows if the formatted output exceeds the buffer size, potentially allowing for memory corruption or arbitrary code execution.
+**Learning:** `sprintf` does not check the bounds of the destination buffer. In a C codebase, especially one handling external inputs like ELF files or memory maps, this is a significant security risk.
+**Prevention:** Strictly use `snprintf` instead of `sprintf` throughout the C codebase. Always pass the correct buffer size (e.g., `sizeof(buff)` or the explicit array dimension) to `snprintf` to ensure strings are properly bounded and null-terminated, guarding against buffer overflows and ensuring robust defense-in-depth security practices.
