@@ -1181,7 +1181,7 @@ dynarec_log(/*LOG_DEBUG*/LOG_INFO, "%04d|Repeated SIGSEGV with Access error on %
             }
         } else {
             char myarg[50] = {0};
-            sprintf(myarg, "%d", pid);
+            snprintf(myarg, sizeof(myarg), "%d", pid);
             if(BOX64ENV(jitgdb)==2)
                 execlp("gdbserver", "gdbserver", "127.0.0.1:1234", "--attach", myarg, (char*)NULL);
             else if(BOX64ENV(jitgdb)==3)
