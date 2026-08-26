@@ -2146,18 +2146,18 @@ const char* getAddrFunctionName(uintptr_t addr)
     if (!sz) sz = 0x100; // arbitrary value...
     if (symbname && (addr >= start) && (addr < (start + sz))) {
         if (symbname[0] == '\0')
-            sprintf(ret, "%s + 0x%lx + 0x%lx", ElfName(elf), start - (uintptr_t)GetBaseAddress(elf), addr - start);
+            snprintf(ret, 1000, "%s + 0x%lx + 0x%lx", ElfName(elf), start - (uintptr_t)GetBaseAddress(elf), addr - start);
         else if (addr == start)
-            sprintf(ret, "%s/%s", ElfName(elf), symbname);
+            snprintf(ret, 1000, "%s/%s", ElfName(elf), symbname);
         else
-            sprintf(ret, "%s/%s + 0x%lx", ElfName(elf), symbname, addr - start);
+            snprintf(ret, 1000, "%s/%s + 0x%lx", ElfName(elf), symbname, addr - start);
     } else {
         if (elf) {
-            sprintf(ret, "%s + 0x%lx", ElfName(elf), addr - (uintptr_t)GetBaseAddress(elf));
+            snprintf(ret, 1000, "%s + 0x%lx", ElfName(elf), addr - (uintptr_t)GetBaseAddress(elf));
         } else if(IsAddrFileMapped(addr, &symbname, &start)) {
-            sprintf(ret, "%s+0x%lx", symbname, addr-start);
+            snprintf(ret, 1000, "%s+0x%lx", symbname, addr-start);
         } else {
-            sprintf(ret, "???");
+            snprintf(ret, 1000, "???");
         }
     }
     return ret;
