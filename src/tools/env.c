@@ -788,7 +788,7 @@ void RecordEnvMappings(uintptr_t addr, size_t length, int fd)
     static char fullname[4096];
     if (fd > 0) {
         static char buf[128];
-        sprintf(buf, "/proc/self/fd/%d", fd);
+        snprintf(buf, sizeof(buf), "/proc/self/fd/%d", fd);
         ssize_t r = readlink(buf, fullname, sizeof(fullname) - 1);
         if (r != -1) fullname[r] = 0;
 
