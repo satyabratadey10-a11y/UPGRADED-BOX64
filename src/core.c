@@ -121,20 +121,25 @@ static void openFTrace(void)
     if (!p || ftrace_opened) return;
     ftrace_opened = 1;
 
-    if (strstr(p, "\%pid")) {
+    if (strstr(p, "%pid")) {
         int next = 0;
         do {
-            strcpy(tmp, p);
+            strncpy(tmp, p, MAX_PATH - 1);
+            tmp[MAX_PATH - 1] = '\0';
             char* c = strstr(tmp, "%pid");
-            *c = 0; // cut
-            char pid[16];
-            if (next)
-                sprintf(pid, "%d-%d", GetTID(), next);
-            else
-                sprintf(pid, "%d", GetTID());
-            strcat(tmp, pid);
-            c = strstr(p, "\%pid") + strlen("\%pid");
-            strcat(tmp, c);
+            if (c != NULL) {
+                *c = 0; // cut
+                char pid[32];
+                if (next)
+                    snprintf(pid, sizeof(pid), "%d-%d", GetTID(), next);
+                else
+                    snprintf(pid, sizeof(pid), "%d", GetTID());
+                strncat(tmp, pid, MAX_PATH - strlen(tmp) - 1);
+                c = strstr(p, "%pid") + strlen("%pid");
+                if (c != NULL) {
+                    strncat(tmp, c, MAX_PATH - strlen(tmp) - 1);
+                }
+            }
             ++next;
         } while (FileExist(tmp, IS_FILE) && !append);
         p = tmp;
