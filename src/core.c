@@ -121,7 +121,7 @@ static void openFTrace(void)
     if (!p || ftrace_opened) return;
     ftrace_opened = 1;
 
-    if (strstr(p, "\%pid")) {
+    if (strstr(p, "%pid")) {
         int next = 0;
         do {
             strncpy(tmp, p, MAX_PATH - 1);
@@ -135,7 +135,7 @@ static void openFTrace(void)
                 else
                     snprintf(pid, sizeof(pid), "%d", GetTID());
                 strncat(tmp, pid, MAX_PATH - strlen(tmp) - 1);
-                c = strstr(p, "\%pid") + strlen("\%pid");
+                c = strstr(p, "%pid") + strlen("%pid");
                 if (c != NULL) {
                     strncat(tmp, c, MAX_PATH - strlen(tmp) - 1);
                 }
