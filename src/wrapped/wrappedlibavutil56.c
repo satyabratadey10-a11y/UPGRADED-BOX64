@@ -47,7 +47,7 @@ static void my_log_callback_##A(void* a, int b, void* c, va_list d)     \
 {                                                                       \
     x64_va_list_t null_va = {0};                                        \
     char* p = NULL;                                                     \
-    (void)!vasprintf(&p, c, d);                                         \
+    if (vasprintf(&p, (char*)c, d) == -1) { return; }                                         \
     RunFunctionFmt(my_log_callback_fct_##A, "pipp", a, b, d, null_va);  \
     free(p);                                                            \
 }
