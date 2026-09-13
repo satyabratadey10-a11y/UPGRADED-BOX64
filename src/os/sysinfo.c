@@ -184,7 +184,7 @@ void InitializeSystemInfo(void)
     sysinfo_t info = { 0 };
     readCpuinfo(&box64_sysinfo);
 
-    char branding[3 * 4 * 4 + 1];
+    char branding[256];
     if (strstr(box64_sysinfo.cpuname, "MHz") || strstr(box64_sysinfo.cpuname, "GHz")) {
         snprintf(branding, sizeof(branding), BOX64_BUILD_INFO_STRING_SHORT " on %.*s", 39, box64_sysinfo.cpuname);
     } else {
