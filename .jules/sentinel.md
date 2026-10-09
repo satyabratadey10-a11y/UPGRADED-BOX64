@@ -17,3 +17,8 @@
 **Vulnerability:** Unbounded string manipulation using `sprintf`.
 **Learning:** `sprintf` writes data to a buffer without checking its length, which can lead to buffer overflow if the source string is longer than expected.
 **Prevention:** Strictly use `snprintf` instead of `sprintf` throughout the codebase, providing the correct size of the destination buffer to prevent overflow and ensure robust defense-in-depth security practices.
+
+## 2024-05-18 - [Insecure File Permissions]
+**Vulnerability:** Found `chmod(cpuinfo_file, 0666)` called on files securely created by `mkstemp()`.
+**Learning:** `mkstemp()` creates files with secure defaults (`0600`), and explicitly calling `chmod` with `0666` weakens these permissions unnecessarily, exposing temporary files to tampering by unprivileged users.
+**Prevention:** Avoid explicit `chmod` calls on temporary files created by `mkstemp()` unless specifically required (and safely configured). Rely on secure defaults.
