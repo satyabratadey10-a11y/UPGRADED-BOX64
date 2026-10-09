@@ -32,3 +32,8 @@
 **Vulnerability:** Use of unbounded string functions `strcpy`, `strcat`, `sprintf`, `vsprintf` creating buffer overflow risks when formatting file paths and traces.
 **Learning:** Legacy C code often relies on unbounded string operations. In `src/os/os_linux.c` and `src/os/os_wine.c`, local arrays were written to without bounds checking.
 **Prevention:** Always use safe bounded equivalents: `snprintf` and `vsnprintf`. When concatenating, carefully track lengths to avoid over-calculating remaining space: `size_t len = strlen(buf); snprintf(buf + len, sizeof(buf) - len, ...);`.
+
+## 2025-02-20 - [Buffer Overflow in BOX64_TRACE_FILE]
+**Vulnerability:** Buffer overflow using `strcpy` and `strcat` when expanding `%pid` in `BOX64_TRACE_FILE` environment variable.
+**Learning:** Legacy string manipulation functions (`strcpy`, `strcat`, and even `strncpy` without length checks) are used extensively for environment variables. Even minor features like trace logging can be a vector for memory corruption if bounds aren't checked.
+**Prevention:** Consistently use bounds-checking string operations like `snprintf` when handling any user-provided data, especially environment variables, to avoid overflows.
