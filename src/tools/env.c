@@ -788,7 +788,7 @@ void RecordEnvMappings(uintptr_t addr, size_t length, int fd)
     static char fullname[4096];
     if (fd > 0) {
         static char buf[128];
-        sprintf(buf, "/proc/self/fd/%d", fd);
+        snprintf(buf, sizeof(buf), "/proc/self/fd/%d", fd);
         ssize_t r = readlink(buf, fullname, sizeof(fullname) - 1);
         if (r != -1) fullname[r] = 0;
 
@@ -804,8 +804,9 @@ void RecordEnvMappings(uintptr_t addr, size_t length, int fd)
             *p = '\0';
         }
         // add the "/fd" at the end to differenciate between memfd
-        char* new_name = box_calloc(1, strlen(lowercase_filename)+100);
-        sprintf(new_name, "%s/%d", lowercase_filename, fd);
+        size_t new_name_size = strlen(lowercase_filename) + 100;
+        char* new_name = box_calloc(1, new_name_size);
+        snprintf(new_name, new_name_size, "%s/%d", lowercase_filename, fd);
         box_free(lowercase_filename);
         lowercase_filename = new_name;
     }
