@@ -12,3 +12,8 @@
  **Vulnerability:** [Use of bounded string formatting (sprintf) risking buffer overflow]
  **Learning:** [Legacy C code commonly uses sprintf which can write past buffer bounds if inputs are unexpectedly large]
  **Prevention:** [Strictly use snprintf with sizeof(buffer) or dynamically calculated lengths rather than hardcoded numerical bounds]
+
+## 2024-05-18 - Prevent Buffer Overflow with bounded string manipulation
+**Vulnerability:** Unbounded string manipulation using `sprintf`.
+**Learning:** `sprintf` writes data to a buffer without checking its length, which can lead to buffer overflow if the source string is longer than expected.
+**Prevention:** Strictly use `snprintf` instead of `sprintf` throughout the codebase, providing the correct size of the destination buffer to prevent overflow and ensure robust defense-in-depth security practices.
