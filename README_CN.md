@@ -21,7 +21,6 @@ Box64 可以使用本机原生的系统库（libc、libm、SDL、OpenGL），有
 <img src="docs/img/Box64Icon.png" width="96" height="96" alt="Box64 Icon">
 
 _Logo 由 @grayduck 制作，感谢！_
-
 ---
 
 ## 使用方法

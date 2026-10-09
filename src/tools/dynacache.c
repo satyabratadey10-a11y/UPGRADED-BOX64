@@ -48,29 +48,33 @@ const char* GetDynacacheFolder(mapping_t* mapping)
     static char folder[4096] = { 0 };
     if(mapping && mapping->env && mapping->env->is_dynacache_folder_overridden && mapping->env->dynacache_folder) {
         if (FileExist(mapping->env->dynacache_folder, 0) || MakeDir(mapping->env->dynacache_folder)) {
-            strcpy(folder, mapping->env->dynacache_folder);
+            strncpy(folder, mapping->env->dynacache_folder, sizeof(folder) - 1);
+            folder[sizeof(folder) - 1] = '\0';
             goto done;
         }
     } else if (box64env.dynacache_folder) {
         if (FileExist(box64env.dynacache_folder, 0) || MakeDir(box64env.dynacache_folder)) {
-            strcpy(folder, box64env.dynacache_folder);
+            strncpy(folder, box64env.dynacache_folder, sizeof(folder) - 1);
+            folder[sizeof(folder) - 1] = '\0';
             goto done;
         }
     }
 
-    if(GetEnv("XDG_CACHE_HOME"))
-        strcpy(folder, GetEnv("XDG_CACHE_HOME"));
-    else if(GetEnv(HOME)) {
-        strcpy(folder, GetEnv(HOME));
-        strcat(folder, PATHSEP);
-        strcat(folder, ".cache");
+    if(GetEnv("XDG_CACHE_HOME")) {
+        strncpy(folder, GetEnv("XDG_CACHE_HOME"), sizeof(folder) - 1);
+        folder[sizeof(folder) - 1] = '\0';
+    } else if(GetEnv(HOME)) {
+        strncpy(folder, GetEnv(HOME), sizeof(folder) - 1);
+        folder[sizeof(folder) - 1] = '\0';
+        strncat(folder, PATHSEP, sizeof(folder) - strlen(folder) - 1);
+        strncat(folder, ".cache", sizeof(folder) - strlen(folder) - 1);
         if (!FileExist(folder, 0) && !MakeDir(folder))
             return NULL;
 
     } else
         return NULL;
-    strcat(folder, PATHSEP);
-    strcat(folder, "box64");
+    strncat(folder, PATHSEP, sizeof(folder) - strlen(folder) - 1);
+    strncat(folder, "box64", sizeof(folder) - strlen(folder) - 1);
     if (!FileExist(folder, 0) && !MakeDir(folder))
         return NULL;
 
