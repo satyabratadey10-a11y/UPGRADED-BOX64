@@ -52,3 +52,8 @@
 **Vulnerability:** Replacing `sprintf` with `snprintf` while hardcoding the length (e.g., `snprintf(buf, 1000, ...)`) rather than dynamically referencing the buffer's size (e.g., `sizeof(buf)`) can still lead to a buffer overflow if the buffer declaration changes in the future and becomes smaller than the hardcoded bound.
 **Learning:** Hardcoded bounds in `snprintf` create maintainability risks because they detach the safety constraint from the actual buffer allocation. If a future change modifies the buffer array size without updating the `snprintf` bound, the code becomes vulnerable again.
 **Prevention:** Always use `sizeof(buffer)` or dynamically calculated lengths tied to the allocation (e.g., `malloc_size`) when using `snprintf` to ensure bounds stay synced with the buffer size.
+
+## YYYY-MM-DD - [Buffer Overflow fixes]
+**Vulnerability:** Found buffer overflows involving fixed-size buffers with strcpy and sprintf (e.g. char tmpbuff[100]; sprintf(tmpbuff, "%s...", getenv("TMP"));).
+**Learning:** This codebase uses standard libc functions where unbounded versions like strcpy and sprintf can lead to stack buffer overflows.
+**Prevention:** Always use bounds-checking versions such as snprintf with sizeof(buffer) to ensure buffers cannot be overflowed.
