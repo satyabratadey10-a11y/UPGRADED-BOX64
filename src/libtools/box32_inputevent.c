@@ -24,7 +24,7 @@ void addInputEventFD(int fd)
     if(fd<0) return;
     char fullname[MAX_PATH] = {0};
     char buf[128];
-    sprintf(buf, "/proc/self/fd/%d", fd);
+    snprintf(buf, sizeof(buf), "/proc/self/fd/%d", fd);
     ssize_t r = readlink(buf, fullname, sizeof(fullname) - 1);
     if(r<0) return;
     #define INPUT_EVENT "/dev/input/event"
