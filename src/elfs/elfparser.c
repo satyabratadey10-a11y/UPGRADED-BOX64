@@ -486,7 +486,7 @@ const char* BindSym(int bind)
         case STB_GNU_UNIQUE: return "STB_GNU_UNIQUE";
     }
     static char tmp[50];
-    sprintf(tmp, "??? 0x%x", bind);
+    snprintf(tmp, sizeof(tmp), "??? 0x%x", bind);
     return tmp;
 }
 
@@ -499,6 +499,6 @@ const char* BindSymFriendly(int bind)
         case STB_GNU_UNIQUE: return "Unique";
     }
     static char tmp[50];
-    sprintf(tmp, "??? 0x%x", bind);
+    snprintf(tmp, sizeof(tmp), "??? 0x%x", bind);
     return tmp;
 }

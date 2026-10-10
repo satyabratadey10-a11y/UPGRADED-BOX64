@@ -2278,7 +2278,7 @@ EXPORT int32_t my_open(x64emu_t* emu, void* pathname, int32_t flags, uint32_t mo
         // special case for self command line...
         #if 0
         char tmpcmdline[200] = {0};
-        char tmpbuff[4096] = {0};
+        char tmpbuff[MAX_PATH] = {0};
         snprintf(tmpbuff, sizeof(tmpbuff), "%s/cmdlineXXXXXX", getenv("TMP")?getenv("TMP"):".");
         int tmp = mkstemp(tmpbuff);
         int dummy;
@@ -2421,7 +2421,7 @@ EXPORT int32_t my_open64(x64emu_t* emu, void* pathname, int32_t flags, uint32_t 
         // special case for self command line...
         #if 0
         char tmpcmdline[200] = {0};
-        char tmpbuff[4096] = {0};
+        char tmpbuff[MAX_PATH] = {0};
         snprintf(tmpbuff, sizeof(tmpbuff), "%s/cmdlineXXXXXX", getenv("TMP")?getenv("TMP"):".");
         int tmp = mkstemp64(tmpbuff);
         int dummy;
@@ -2873,7 +2873,6 @@ EXPORT int32_t my_execve(x64emu_t* emu, const char* path, char* const argv[], ch
         snprintf(template, sizeof(template), "/proc/self/fd/%d", fd);
         int rl = readlink(template, cpuinfo_file, sizeof(cpuinfo_file));
         close(fd);
-        chmod(cpuinfo_file, 0666);
         newargv[cpuinfo] = cpuinfo_file;
         printf_log(LOG_DEBUG, " => execve(\"%s\", %p [\"%s\", \"%s\", \"%s\"...:%d], %p)\n", path, newargv, newargv[0], newargv[1], newargv[2],n, envp);
         int ret = execve(path, (char* const*)newargv, envp);
@@ -2898,7 +2897,6 @@ EXPORT int32_t my_execve(x64emu_t* emu, const char* path, char* const argv[], ch
         snprintf(template, sizeof(template), "/proc/self/fd/%d", fd);
         int rl = readlink(template, cpuinfo_file, sizeof(cpuinfo_file));
         close(fd);
-        chmod(cpuinfo_file, 0666);
         newargv[cpuinfo] = cpuinfo_file;
         printf_log(LOG_DEBUG, " => execve(\"%s\", %p [\"%s\", \"%s\", \"%s\"...:%d], %p)\n", path, newargv, newargv[0], newargv[1], newargv[2],n, envp);
         int ret = execve(path, (char* const*)newargv, envp);
