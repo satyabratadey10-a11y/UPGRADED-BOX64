@@ -42,3 +42,13 @@
 **Vulnerability:** Unbounded `strcpy` and `strcat` functions were used to write into arrays sized `MAX_PATH` (e.g., `char file[MAX_PATH] = {0};`) in `src/steam.c`, leading to potential buffer overflow if path strings exceed 4096 characters.
 **Learning:** This codebase frequently performs string manipulation on file paths where it's assumed lengths won't exceed standard limits, which is risky when dealing with external environments like steam runtime paths.
 **Prevention:** Always use bounded string manipulation functions (`strncpy`, `strncat`) and ensure explicit null-termination of the buffer (e.g., `buffer[sizeof(buffer) - 1] = '\0'`) to prevent buffer overflows.
+
+## 2024-05-24 - Replace sprintf with snprintf
+**Vulnerability:** Use of bounded `sprintf` with unsanitized/complex string lengths that could potentially overflow fixed-size buffers, as seen in `src/elfs/elfloader.c`.
+**Learning:** Legacy string formatting routines like `sprintf` do not enforce buffer length bounds, leading to potential buffer overflow conditions when writing symbol or elf names into path/memory buffers.
+**Prevention:** Strictly enforce the use of `snprintf` over `sprintf` for formatted strings across the codebase, ensuring exact buffer dimensions are passed to avoid overwriting boundaries.
+
+## 2024-05-24 - Ensure `snprintf` sizes match buffer declarations
+**Vulnerability:** Replacing `sprintf` with `snprintf` while hardcoding the length (e.g., `snprintf(buf, 1000, ...)`) rather than dynamically referencing the buffer's size (e.g., `sizeof(buf)`) can still lead to a buffer overflow if the buffer declaration changes in the future and becomes smaller than the hardcoded bound.
+**Learning:** Hardcoded bounds in `snprintf` create maintainability risks because they detach the safety constraint from the actual buffer allocation. If a future change modifies the buffer array size without updating the `snprintf` bound, the code becomes vulnerable again.
+**Prevention:** Always use `sizeof(buffer)` or dynamically calculated lengths tied to the allocation (e.g., `malloc_size`) when using `snprintf` to ensure bounds stay synced with the buffer size.
