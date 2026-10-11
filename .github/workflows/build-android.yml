@@ -29,13 +29,25 @@ jobs:
           cd build
           make -j$(nproc)
 
+      - name: Build static launcher
+        run: |
+          NDK_BIN="${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          $NDK_BIN/aarch64-linux-android29-clang \
+            -static \
+            -O2 \
+            -o build/box64_launcher \
+            src/launcher/box64_launcher.c
+          echo "Launcher size: $(ls -lh build/box64_launcher | awk '{print $5}')"
+          file build/box64_launcher
+
       - name: Package WCP
         run: |
           mkdir -p wcp_package/usr/bin
-          cp build/box64 wcp_package/usr/bin/box64.real
-          cp box64_wrapper.sh wcp_package/usr/bin/box64
+          cp build/box64         wcp_package/usr/bin/box64.real
+          cp build/box64_launcher wcp_package/usr/bin/box64
           chmod +x wcp_package/usr/bin/box64
           chmod +x wcp_package/usr/bin/box64.real
+          ls -la wcp_package/usr/bin/
           cd wcp_package
           zip -r ../box64-upgraded.wcp .
 
