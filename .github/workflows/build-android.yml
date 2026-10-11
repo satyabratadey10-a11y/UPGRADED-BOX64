@@ -29,10 +29,13 @@ jobs:
           cd build
           make -j$(nproc)
 
-      - name: Package WCP for Winlator
+      - name: Package WCP
         run: |
           mkdir -p wcp_package/usr/bin
-          cp build/box64 wcp_package/usr/bin/box64
+          cp build/box64 wcp_package/usr/bin/box64.real
+          cp box64_wrapper.sh wcp_package/usr/bin/box64
+          chmod +x wcp_package/usr/bin/box64
+          chmod +x wcp_package/usr/bin/box64.real
           cd wcp_package
           zip -r ../box64-upgraded.wcp .
 
