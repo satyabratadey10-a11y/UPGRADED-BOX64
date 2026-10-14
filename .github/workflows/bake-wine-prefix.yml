@@ -7,23 +7,22 @@ jobs:
   bake:
     runs-on: ubuntu-22.04
     steps:
-      - name: Install Wine
+      - name: Install Wine (Kron4ek 9.0 amd64 matching Termux)
         run: |
-          sudo dpkg --add-architecture i386
-          sudo mkdir -pm755 /etc/apt/keyrings
-          sudo wget -O /etc/apt/keyrings/winehq-archive.key \
-            https://dl.winehq.org/wine-builds/winehq.key
-          sudo wget -NP /etc/apt/sources.list.d/ \
-            https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-jammy.sources
           sudo apt-get update -qq
-          sudo apt-get install -y --install-recommends winehq-stable p7zip-full zstd
-          echo "/opt/wine-stable/bin" >> $GITHUB_PATH
-          export PATH="/opt/wine-stable/bin:$PATH"
-          wine --version
+          sudo apt-get install -y p7zip-full zstd
+          mkdir -p /opt/wine-9.0
+          wget -q "https://github.com/Kron4ek/Wine-Builds/releases/download/9.0/wine-9.0-amd64.tar.xz" \
+            -O /tmp/wine.tar.xz
+          tar -xf /tmp/wine.tar.xz -C /opt/wine-9.0 --strip-components=1
+          echo "/opt/wine-9.0/bin" >> $GITHUB_PATH
+          export PATH="/opt/wine-9.0/bin:$PATH"
+          wine64 --version
 
       - name: Bake minimal Wine prefix
         run: |
           export WINEPREFIX=$HOME/wine-prefix
+          export WINEARCH=win64
           export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe=d"
           export WINEDEBUG=-all
           export DISPLAY=""
@@ -48,7 +47,7 @@ jobs:
       - name: Compress prefix
         run: |
           cd $HOME
-          tar -I zstd -cf /tmp/wine-prefix-geany.tar.zst wine-prefix/
+          tar -I "zstd -19 -T0" -cf /tmp/wine-prefix-geany.tar.zst wine-prefix/
           ls -lh /tmp/wine-prefix-geany.tar.zst
 
       - name: Upload prefix artifact
