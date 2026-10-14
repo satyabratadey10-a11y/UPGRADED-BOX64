@@ -1,0 +1,61 @@
+name: Bake Wine Prefix for Termux Testing
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bake:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install Wine
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo mkdir -pm755 /etc/apt/keyrings
+          sudo wget -O /etc/apt/keyrings/winehq-archive.key \
+            https://dl.winehq.org/wine-builds/winehq.key
+          sudo wget -NP /etc/apt/sources.list.d/ \
+            https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-stable.sources
+          sudo apt-get update -qq
+          sudo apt-get install -y --install-recommends winehq-stable p7zip-full zstd
+          wine64 --version
+
+      - name: Bake minimal Wine prefix
+        run: |
+          export WINEPREFIX=/tmp/wine-prefix
+          export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe=d"
+          export WINEDEBUG=-all
+          export DISPLAY=""
+          wineboot --init
+          echo "Prefix size: $(du -sh $WINEPREFIX | cut -f1)"
+
+      - name: Install Geany into prefix
+        run: |
+          export WINEPREFIX=/tmp/wine-prefix
+          export WINEDEBUG=-all
+          export DISPLAY=""
+          wget -q "https://download.geany.org/geany-2.1_setup.exe" \
+            -O /tmp/geany_setup.exe
+          7z x /tmp/geany_setup.exe -o/tmp/geany-files 2>&1 | tail -3
+          mkdir -p "$WINEPREFIX/drive_c/Program Files/Geany"
+          cp -r /tmp/geany-files/* \
+            "$WINEPREFIX/drive_c/Program Files/Geany/" 2>/dev/null || true
+          find $WINEPREFIX -name "libiconv-2.dll" | head -3
+          find $WINEPREFIX -name "geany.exe" | head -3
+
+      - name: Compress prefix
+        run: |
+          cd /tmp
+          tar -I zstd -cf wine-prefix-geany.tar.zst wine-prefix/
+          ls -lh wine-prefix-geany.tar.zst
+
+      - name: Upload prefix artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wine-prefix-geany
+          path: /tmp/wine-prefix-geany.tar.zst
+
+      - name: Upload Geany files separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: geany-files
+          path: /tmp/geany-files/
