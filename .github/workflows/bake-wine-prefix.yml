@@ -10,7 +10,7 @@ jobs:
       - name: Install Wine (Kron4ek 9.0 amd64 matching Termux)
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y p7zip-full zstd
+          sudo apt-get install -y p7zip-full
           mkdir -p /opt/wine-9.0
           wget -q "https://github.com/Kron4ek/Wine-Builds/releases/download/9.0/wine-9.0-amd64.tar.xz" \
             -O /tmp/wine.tar.xz
@@ -44,17 +44,17 @@ jobs:
           find $WINEPREFIX -name "libiconv-2.dll" | head -3
           find $WINEPREFIX -name "geany.exe" | head -3
 
-      - name: Compress prefix
+      - name: Compress prefix with 7z ultra
         run: |
           cd $HOME
-          tar -I "zstd -19 -T0" -cf /tmp/wine-prefix-geany.tar.zst wine-prefix/
-          ls -lh /tmp/wine-prefix-geany.tar.zst
+          7z a -t7z -m0=lzma2 -mx=9 -mfb=273 -ms=on /tmp/wine-prefix-geany.7z wine-prefix/
+          ls -lh /tmp/wine-prefix-geany.7z
 
       - name: Upload prefix artifact
         uses: actions/upload-artifact@v4
         with:
           name: wine-prefix-geany
-          path: /tmp/wine-prefix-geany.tar.zst
+          path: /tmp/wine-prefix-geany.7z
 
       - name: Upload Geany files separately
         uses: actions/upload-artifact@v4
