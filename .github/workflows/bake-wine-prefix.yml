@@ -23,7 +23,7 @@ jobs:
 
       - name: Bake minimal Wine prefix
         run: |
-          export WINEPREFIX=/tmp/wine-prefix
+          export WINEPREFIX=$HOME/wine-prefix
           export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe=d"
           export WINEDEBUG=-all
           export DISPLAY=""
@@ -33,7 +33,7 @@ jobs:
 
       - name: Install Geany into prefix
         run: |
-          export WINEPREFIX=/tmp/wine-prefix
+          export WINEPREFIX=$HOME/wine-prefix
           export WINEDEBUG=-all
           export DISPLAY=""
           wget -q "https://download.geany.org/geany-2.1_setup.exe" \
@@ -47,9 +47,9 @@ jobs:
 
       - name: Compress prefix
         run: |
-          cd /tmp
-          tar -I zstd -cf wine-prefix-geany.tar.zst wine-prefix/
-          ls -lh wine-prefix-geany.tar.zst
+          cd $HOME
+          tar -I zstd -cf /tmp/wine-prefix-geany.tar.zst wine-prefix/
+          ls -lh /tmp/wine-prefix-geany.tar.zst
 
       - name: Upload prefix artifact
         uses: actions/upload-artifact@v4
