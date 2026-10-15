@@ -4848,6 +4848,19 @@ EXPORT char* secure_getenv(const char* name)
     return getenv(name);
 }
 
+EXPORT void* my___errno_location(x64emu_t* emu)
+{
+    (void)emu;
+    return &errno;
+}
+
+EXPORT void my___assert_fail(x64emu_t* emu, void* assertion, void* file, uint32_t line, void* function)
+{
+    (void)emu;
+    printf_log(LOG_NONE, "Assertion failed: %s (%s: %s: %u)\n", (const char*)assertion, (const char*)file, function?(const char*)function:"?", line);
+    abort();
+}
+
 #ifdef STATICBUILD
 #include "libtools/static_libc.h"
 #endif
