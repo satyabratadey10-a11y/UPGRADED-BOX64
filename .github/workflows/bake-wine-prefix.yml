@@ -61,3 +61,27 @@ jobs:
         with:
           name: geany-files
           path: /tmp/geany-files/
+
+  prepare-vscodium:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Download VSCodium 1.72.2 (Electron 19, pre-V8-cage)
+        run: |
+          wget -q \
+            "https://github.com/VSCodium/vscodium/releases/download/1.72.2.22289/VSCodium-win32-x64-1.72.2.22289.zip" \
+            -O VSCodium-win32-x64-1.72.2.22285.zip
+          echo "Size: $(ls -lh VSCodium-win32-x64-1.72.2.22285.zip | awk '{print $5}')"
+          unzip -q VSCodium-win32-x64-1.72.2.22285.zip -d vscodium-1.72.2/
+          ls -la vscodium-1.72.2/VSCodium.exe
+
+      - name: Verify Electron version (must be 19.x)
+        run: |
+          ls vscodium-1.72.2/resources/app/node_modules.asar 2>/dev/null || true
+          strings vscodium-1.72.2/VSCodium.exe | grep -i "electron/" | head -3
+          strings vscodium-1.72.2/VSCodium.exe | grep -oP "Chrome/[0-9.]+" | head -2
+
+      - name: Upload VSCodium artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscodium-1.72.2-win32-x64
+          path: VSCodium-win32-x64-1.72.2.22285.zip
