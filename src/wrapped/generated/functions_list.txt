@@ -5508,6 +5508,8 @@ wrappedlibc:
   - sysconf
 - LFL:
   - getauxval
+- pFv:
+  - __errno_location
 - pFL:
   - _ZGTtnaX
   - _ZGTtnam
@@ -5719,6 +5721,8 @@ wrappedlibc:
   - qsort
 - vFppiV:
   - makecontext
+- vFppup:
+  - __assert_fail
 - vFpppp:
   - __libc_init
 - iFiiip:
