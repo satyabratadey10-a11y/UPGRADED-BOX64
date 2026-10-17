@@ -17,7 +17,7 @@ static const char* DumpSection(Elf32_Shdr *s, char* SST) {
             return "SHT_NULL";
         #define GO(A) \
         case A:     \
-            sprintf(buff, #A " Name=\"%s\"(%d) off=0x%X, size=%d, attr=0x%04X, addr=%p(%02X), link/info=%d/%d", \
+            snprintf(buff, sizeof(buff), #A " Name=\"%s\"(%d) off=0x%X, size=%d, attr=0x%04X, addr=%p(%02X), link/info=%d/%d", \
                 SST+s->sh_name, s->sh_name, s->sh_offset, s->sh_size, s->sh_flags, from_ptrv(s->sh_addr), s->sh_addralign, s->sh_link, s->sh_info); \
             break
         GO(SHT_PROGBITS);
