@@ -23,6 +23,7 @@ typedef uint64_t (*UFp_t)(void*);
 typedef intptr_t (*lFv_t)(void);
 typedef intptr_t (*lFi_t)(int32_t);
 typedef uintptr_t (*LFL_t)(uintptr_t);
+typedef void* (*pFv_t)(void);
 typedef void* (*pFL_t)(uintptr_t);
 typedef void* (*pFp_t)(void*);
 typedef void (*vFpi_t)(void*, int32_t);
@@ -79,6 +80,7 @@ typedef void (*vFiipV_t)(int32_t, int32_t, void*, ...);
 typedef void (*vFiipA_t)(int32_t, int32_t, void*, va_list);
 typedef void (*vFpLLp_t)(void*, uintptr_t, uintptr_t, void*);
 typedef void (*vFppiV_t)(void*, void*, int32_t, ...);
+typedef void (*vFppup_t)(void*, void*, uint32_t, void*);
 typedef void (*vFpppp_t)(void*, void*, void*, void*);
 typedef int32_t (*iFiiip_t)(int32_t, int32_t, int32_t, void*);
 typedef int32_t (*iFiiiN_t)(int32_t, int32_t, int32_t, ...);
@@ -158,6 +160,10 @@ typedef int32_t (*iFppipppp_t)(void*, void*, int32_t, void*, void*, void*, void*
 	GO(__sysconf, lFi_t) \
 	GO(sysconf, lFi_t) \
 	GO(getauxval, LFL_t) \
+	GO(__ctype_b_loc, pFv_t) \
+	GO(__ctype_tolower_loc, pFv_t) \
+	GO(__ctype_toupper_loc, pFv_t) \
+	GO(__errno_location, pFv_t) \
 	GO(_ZGTtnaX, pFL_t) \
 	GO(_ZGTtnam, pFL_t) \
 	GO(__deregister_frame_info, pFp_t) \
@@ -313,6 +319,7 @@ typedef int32_t (*iFppipppp_t)(void*, void*, int32_t, void*, void*, void*, void*
 	GO(__vsyslog_chk, vFiipA_t) \
 	GO(qsort, vFpLLp_t) \
 	GO(makecontext, vFppiV_t) \
+	GO(__assert_fail, vFppup_t) \
 	GO(__libc_init, vFpppp_t) \
 	GO(epoll_ctl, iFiiip_t) \
 	GO(semctl, iFiiiN_t) \

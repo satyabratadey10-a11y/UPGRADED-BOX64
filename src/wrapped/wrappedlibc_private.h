@@ -191,13 +191,7 @@ DATA(_ctype_, 8)
 //DATA(__ctype32_b, 
 //DATA(__ctype32_tolower, 
 //DATA(__ctype32_toupper, 
-#ifdef ANDROID
 DATAM(__ctype_b, 8)
-#elif defined(STATICBUILD)
-//DATA(__ctype_b, 8)
-#else
-DATA(__ctype_b, 8)
-#endif
 GOM(__ctype_b_loc, pFv)
 GO(__ctype_get_mb_cur_max, LFv)
 //GO(__ctype_init, 
