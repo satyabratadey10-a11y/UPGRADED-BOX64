@@ -191,18 +191,20 @@ DATA(_ctype_, 8)
 //DATA(__ctype32_b, 
 //DATA(__ctype32_tolower, 
 //DATA(__ctype32_toupper, 
-#ifdef STATICBUILD
+#ifdef ANDROID
+DATAM(__ctype_b, 8)
+#elif defined(STATICBUILD)
 //DATA(__ctype_b, 8)
 #else
 DATA(__ctype_b, 8)
 #endif
-GO(__ctype_b_loc, pFv)
+GOM(__ctype_b_loc, pFv)
 GO(__ctype_get_mb_cur_max, LFv)
 //GO(__ctype_init, 
 DATAM(__ctype_tolower, 8)
-GO(__ctype_tolower_loc, pFv)
+GOM(__ctype_tolower_loc, pFv)
 DATAM(__ctype_toupper, 8)
-GO(__ctype_toupper_loc, pFv)
+GOM(__ctype_toupper_loc, pFv)
 //DATAB(__curbrk, 
 GO(cuserid, pFp)
 GOM(__cxa_atexit, iFEppp)

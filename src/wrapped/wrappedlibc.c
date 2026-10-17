@@ -3450,14 +3450,88 @@ void InitCpuModel()
 }
 #endif
 
+EXPORT const unsigned short int *my___ctype_b = NULL;
+EXPORT const int32_t *my___ctype_tolower = NULL;
+EXPORT const int32_t *my___ctype_toupper = NULL;
+
 #ifdef ANDROID
+static unsigned short android_ctype_b_table[384];
+static int32_t android_ctype_tolower_table[384];
+static int32_t android_ctype_toupper_table[384];
+
+EXPORT const unsigned short int** my___ctype_b_loc()
+{
+    return &my___ctype_b;
+}
+
+EXPORT const int32_t** my___ctype_tolower_loc()
+{
+    return &my___ctype_tolower;
+}
+
+EXPORT const int32_t** my___ctype_toupper_loc()
+{
+    return &my___ctype_toupper;
+}
+
 void ctSetup()
 {
+    for (int i = -128; i < 256; ++i) {
+        int idx = i + 128;
+        unsigned short b = 0;
+        int to_l = i;
+        int to_u = i;
+
+        if (i >= 0 && i < 256) {
+            if (i >= 'A' && i <= 'Z') {
+                b |= 0x0100 | 0x0400 | 0x0008 | 0x8000 | 0x4000;
+                to_l = i + 32;
+                to_u = i;
+            } else if (i >= 'a' && i <= 'z') {
+                b |= 0x0200 | 0x0400 | 0x0008 | 0x8000 | 0x4000;
+                to_l = i;
+                to_u = i - 32;
+            } else if (i >= '0' && i <= '9') {
+                b |= 0x0800 | 0x1000 | 0x0008 | 0x8000 | 0x4000;
+            } else if ((i >= 'a' && i <= 'f') || (i >= 'A' && i <= 'F')) {
+                b |= 0x1000;
+            }
+
+            if (i == ' ' || i == '\t' || i == '\n' || i == '\r' || i == '\f' || i == '\v') {
+                b |= 0x2000;
+                if (i == ' ' || i == '\t') b |= 0x0001;
+            }
+            if ((i >= 0 && i < 32) || i == 127) {
+                b |= 0x0002;
+            } else if (!(b & (0x0400 | 0x0800 | 0x2000))) {
+                b |= 0x0004 | 0x8000 | 0x4000;
+            }
+        }
+
+        android_ctype_b_table[idx] = b;
+        android_ctype_tolower_table[idx] = to_l;
+        android_ctype_toupper_table[idx] = to_u;
+    }
+
+    my___ctype_b = &android_ctype_b_table[128];
+    my___ctype_tolower = &android_ctype_tolower_table[128];
+    my___ctype_toupper = &android_ctype_toupper_table[128];
 }
 #else
-EXPORT const unsigned short int *my___ctype_b;
-EXPORT const int32_t *my___ctype_tolower;
-EXPORT const int32_t *my___ctype_toupper;
+EXPORT const unsigned short int** my___ctype_b_loc()
+{
+    return __ctype_b_loc();
+}
+
+EXPORT const int32_t** my___ctype_tolower_loc()
+{
+    return __ctype_tolower_loc();
+}
+
+EXPORT const int32_t** my___ctype_toupper_loc()
+{
+    return __ctype_toupper_loc();
+}
 
 void ctSetup()
 {
