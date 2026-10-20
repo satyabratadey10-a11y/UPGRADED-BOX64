@@ -23,6 +23,8 @@ extern int _nl_msg_cat_cntr __attribute__((weak));
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
+#include <libgen.h>
+#include <limits.h>
 #include <wchar.h>
 #include <dlfcn.h>
 #include <signal.h>
@@ -2254,11 +2256,37 @@ void CreateCpuCacheSize(int fd, int cpu, int index)
 }
 
 #ifdef ANDROID
-static int shm_open(const char *name, int oflag, mode_t mode) {
-    return -1;
+static void get_shm_path(char* dest, size_t dest_sz, const char* name) {
+    while (*name == '/') name++;
+    if (access("/dev/shm", W_OK) == 0) {
+        snprintf(dest, dest_sz, "/dev/shm/%s", name);
+    } else {
+        const char* tmp = getenv("TMPDIR");
+        if (!tmp || access(tmp, W_OK) != 0) {
+            if (access("/tmp", W_OK) == 0) tmp = "/tmp";
+            else if (access("/data/local/tmp", W_OK) == 0) tmp = "/data/local/tmp";
+            else tmp = ".";
+        }
+        snprintf(dest, dest_sz, "%s/.shm_%s", tmp, name);
+    }
 }
-static int shm_unlink(const char *name) {
-    return -1;
+
+EXPORT int shm_open(const char *name, int oflag, mode_t mode) {
+    char path[PATH_MAX];
+    get_shm_path(path, sizeof(path), name);
+    int fd = open(path, oflag | O_CLOEXEC, mode ? mode : 0600);
+    if (fd < 0 && (oflag & O_CREAT)) {
+#ifdef __NR_memfd_create
+        fd = syscall(__NR_memfd_create, name, 1 /* MFD_CLOEXEC */);
+#endif
+    }
+    return fd;
+}
+
+EXPORT int shm_unlink(const char *name) {
+    char path[PATH_MAX];
+    get_shm_path(path, sizeof(path), name);
+    return unlink(path);
 }
 #endif
 
@@ -4933,6 +4961,27 @@ EXPORT void my___assert_fail(x64emu_t* emu, void* assertion, void* file, uint32_
     (void)emu;
     printf_log(LOG_NONE, "Assertion failed: %s (%s: %s: %u)\n", (const char*)assertion, (const char*)file, function?(const char*)function:"?", line);
     abort();
+}
+
+EXPORT char* my___xpg_basename(x64emu_t* emu, char* path) {
+    (void)emu;
+    if (!path || !*path) return ".";
+    return basename(path);
+}
+
+EXPORT char* __xpg_basename(char* path) {
+    if (!path || !*path) return ".";
+    return basename(path);
+}
+
+EXPORT int my_shm_open(x64emu_t* emu, const char* name, int oflag, mode_t mode) {
+    (void)emu;
+    return shm_open(name, oflag, mode);
+}
+
+EXPORT int my_shm_unlink(x64emu_t* emu, const char* name) {
+    (void)emu;
+    return shm_unlink(name);
 }
 
 #ifdef STATICBUILD
