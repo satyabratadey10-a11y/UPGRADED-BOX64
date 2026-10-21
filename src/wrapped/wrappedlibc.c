@@ -4924,12 +4924,24 @@ __attribute__((weak)) int dn_skipname(const unsigned char* ptr, const unsigned c
 #ifndef _SC_NPROCESSORS_CONF
 #define _SC_NPROCESSORS_CONF    83
 #endif
+#ifndef _SC_PAGESIZE
+#define _SC_PAGESIZE 30
+#endif
 EXPORT long my_sysconf(x64emu_t* emu, int what) {
     if(what==_SC_NPROCESSORS_ONLN) {
         return box64_sysinfo.box64_ncpu;
     }
     if(what==_SC_NPROCESSORS_CONF) {
         return box64_sysinfo.box64_ncpu;
+    }
+    // x86_64 glibc _SC_PAGESIZE = 30, but Android Bionic 30 = _SC_2_C_VERSION
+    // which returns 1, breaking any Wine component that uses pagesize for mmap
+    if(what==30) {
+        return box64_pagesize;
+    }
+    // Also handle _SC_PAGE_SIZE if it differs on this platform
+    if(what==_SC_PAGESIZE && _SC_PAGESIZE != 30) {
+        return box64_pagesize;
     }
     return sysconf(what);
 }
