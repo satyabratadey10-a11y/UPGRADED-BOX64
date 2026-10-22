@@ -91,6 +91,7 @@ DWORD WINAPI GetEnvironmentVariableA(LPCSTR name, LPSTR value, DWORD size)
         ret = len + 1;
     else {
         if (len) RtlUnicodeToMultiByteN(value, size, &ret, valueW, len * sizeof(WCHAR));
+        if (ret < size) value[ret] = 0;
     }
 
     RtlFreeUnicodeString(&nameU);
