@@ -62,3 +62,7 @@
 **Vulnerability:** Found multiple instances where `sprintf` was used with small, fixed-size buffers (e.g. 64 or 100 bytes) to format strings containing external input (like the `TMP` or `TMPDIR` environment variables). This allowed a malicious user to cause a stack-based buffer overflow by providing excessively long inputs.
 **Learning:** Legacy C code often relies on `sprintf` and assumes environment variables or paths will fall within "reasonable" bounds, ignoring edge cases or malicious inputs.
 **Prevention:** Always use `snprintf` with properly sized buffers (e.g. `4096` for standard maximum path lengths) when dealing with external inputs to ensure bounds checking and prevent stack corruption.
+## 2026-10-18 - [Fix buffer overflow risk in elfload_dump32.c]
+**Vulnerability:** Found `sprintf` being used with a statically allocated 4096-byte array `buff` to format strings containing symbol details in `src/elfs/elfload_dump32.c`. While 4096 is large, standard formatting without bounds checking provides a risk of stack buffer overflow if symbol names are excessively long.
+**Learning:** Legacy C code often relies on `sprintf` and assumes lengths fall within limits, ignoring edge cases or malicious ELF input containing massive string table entries.
+**Prevention:** Strictly use `snprintf` instead of `sprintf` throughout the C codebase to securely construct formatted strings safely and prevent stack corruption.

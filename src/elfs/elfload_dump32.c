@@ -206,9 +206,10 @@ static const char* DumpSym(elfheader_t *h, Elf32_Sym* sym, int version)
     static char buff[4096];
     const char* vername = (version==-1)?"(none)":((version==0)?"*local*":((version==1)?"*global*":GetSymbolVersion(h, version)));
     memset(buff, 0, sizeof(buff));
-    sprintf(buff, "\"%s\", value=%p, size=%d, info/other=%d/%d index=%d (ver=%d/%s)", 
+    snprintf(buff, sizeof(buff), "\"%s\", value=%p, size=%d, info/other=%d/%d index=%d (ver=%d/%s)",
         h->DynStr+sym->st_name, from_ptrv(sym->st_value), sym->st_size,
         sym->st_info, sym->st_other, sym->st_shndx, version, vername);
+    /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
     return buff;
 }
 
