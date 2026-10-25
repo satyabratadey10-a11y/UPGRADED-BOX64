@@ -1095,7 +1095,8 @@ int LoadNeededLibs(elfheader_t* h, lib_t *maplib, int local, int bindnow, int de
                 box_free(origin);
                 if(!FileExist(rpath, 0) && strstr(rpath, "/../../")) {
                     tmp = (char*)box_calloc(1, strlen(rpath)+1);
-                    strcpy(tmp, rpath);
+                    snprintf(tmp, strlen(rpath)+1, "%s", rpath);
+                    /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
                     // check if one "/.." could be removed for the folder to exist
                     char* p = strstr(tmp, "/../../");
                     memmove(p, p+3, strlen(p+3)+1);
