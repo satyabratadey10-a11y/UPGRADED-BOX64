@@ -62,3 +62,7 @@
 **Vulnerability:** Found multiple instances where `sprintf` was used with small, fixed-size buffers (e.g. 64 or 100 bytes) to format strings containing external input (like the `TMP` or `TMPDIR` environment variables). This allowed a malicious user to cause a stack-based buffer overflow by providing excessively long inputs.
 **Learning:** Legacy C code often relies on `sprintf` and assumes environment variables or paths will fall within "reasonable" bounds, ignoring edge cases or malicious inputs.
 **Prevention:** Always use `snprintf` with properly sized buffers (e.g. `4096` for standard maximum path lengths) when dealing with external inputs to ensure bounds checking and prevent stack corruption.
+## 2024-11-20 - [SECURITY] Replace unbounded string copy with snprintf in elfloader.c
+ **Vulnerability:** Use of `strcpy` and `strcat` with Variable Length Arrays (VLA) in `src/elfs/elfloader.c` potentially leading to buffer overflows or truncation issues.
+ **Learning:** Legacy code combined `strlen` calculations with sequential `strcpy` and `strcat` calls which is error-prone and can lead to bounds issues or off-by-one errors.
+ **Prevention:** Use `snprintf` with properly sized buffers to concatenate strings cleanly and safely, ensuring bounds checking is strictly enforced.

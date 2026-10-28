@@ -17,8 +17,8 @@ static const char* DumpSection(Elf32_Shdr *s, char* SST) {
             return "SHT_NULL";
         #define GO(A) \
         case A:     \
-            sprintf(buff, #A " Name=\"%s\"(%d) off=0x%X, size=%d, attr=0x%04X, addr=%p(%02X), link/info=%d/%d", \
-                SST+s->sh_name, s->sh_name, s->sh_offset, s->sh_size, s->sh_flags, from_ptrv(s->sh_addr), s->sh_addralign, s->sh_link, s->sh_info); \
+            snprintf(buff, sizeof(buff), #A " Name=\"%s\"(%d) off=0x%X, size=%d, attr=0x%04X, addr=%p(%02X), link/info=%d/%d", \
+                SST+s->sh_name, s->sh_name, s->sh_offset, s->sh_size, s->sh_flags, from_ptrv(s->sh_addr), s->sh_addralign, s->sh_link, s->sh_info); /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */ \
             break
         GO(SHT_PROGBITS);
         GO(SHT_SYMTAB);
@@ -56,7 +56,7 @@ static const char* DumpSection(Elf32_Shdr *s, char* SST) {
         #endif
         #undef GO
         default:
-            sprintf(buff, "0x%X unknown type", s->sh_type);
+            snprintf(buff, sizeof(buff), "0x%X unknown type", s->sh_type); /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
     }
     return buff;
 }
@@ -68,7 +68,7 @@ static const char* DumpDynamic(Elf32_Dyn *s) {
             return "DT_NULL: End Dynamic Section";
         #define GO(A, Add) \
         case A:     \
-            sprintf(buff, #A " %s=0x%X", (Add)?"Addr":"Val", (Add)?s->d_un.d_ptr:s->d_un.d_val); \
+            snprintf(buff, sizeof(buff), #A " %s=0x%X", (Add)?"Addr":"Val", (Add)?s->d_un.d_ptr:s->d_un.d_val); /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */ \
             break
             GO(DT_NEEDED, 0);
             GO(DT_PLTRELSZ, 0);
@@ -140,7 +140,7 @@ static const char* DumpDynamic(Elf32_Dyn *s) {
             #endif
         #undef GO
         default:
-            sprintf(buff, "0x%X unknown type", s->d_tag);
+            snprintf(buff, sizeof(buff), "0x%X unknown type", s->d_tag); /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
     }
     return buff;
 }
@@ -150,8 +150,8 @@ static const char* DumpPHEntry(Elf32_Phdr *e)
     static char buff[500];
     memset(buff, 0, sizeof(buff));
     switch(e->p_type) {
-        case PT_NULL: sprintf(buff, "type: %s", "PT_NULL"); break;
-        #define GO(T) case T: sprintf(buff, "type: %s, Off=%x vaddr=%p paddr=%p filesz=%u memsz=%u flags=%x align=%u", #T, e->p_offset, from_ptrv(e->p_vaddr), from_ptrv(e->p_paddr), e->p_filesz, e->p_memsz, e->p_flags, e->p_align); break
+        case PT_NULL: snprintf(buff, sizeof(buff), "type: %s", "PT_NULL"); break; /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
+        #define GO(T) case T: snprintf(buff, sizeof(buff), "type: %s, Off=%x vaddr=%p paddr=%p filesz=%u memsz=%u flags=%x align=%u", #T, e->p_offset, from_ptrv(e->p_vaddr), from_ptrv(e->p_paddr), e->p_filesz, e->p_memsz, e->p_flags, e->p_align); break; /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
         GO(PT_LOAD);
         GO(PT_DYNAMIC);
         GO(PT_INTERP);
@@ -167,7 +167,7 @@ static const char* DumpPHEntry(Elf32_Phdr *e)
         GO(PT_GNU_RELRO);
         #endif
         #undef GO
-        default: sprintf(buff, "type: %x, Off=%x vaddr=%p paddr=%p filesz=%u memsz=%u flags=%x align=%u", e->p_type, e->p_offset, from_ptrv(e->p_vaddr), from_ptrv(e->p_paddr), e->p_filesz, e->p_memsz, e->p_flags, e->p_align); break;
+        default: snprintf(buff, sizeof(buff), "type: %x, Off=%x vaddr=%p paddr=%p filesz=%u memsz=%u flags=%x align=%u", e->p_type, e->p_offset, from_ptrv(e->p_vaddr), from_ptrv(e->p_paddr), e->p_filesz, e->p_memsz, e->p_flags, e->p_align); break; /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
     }
     return buff;
 }
