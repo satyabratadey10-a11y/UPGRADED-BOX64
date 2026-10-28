@@ -1481,9 +1481,7 @@ const char* VersionedName(const char* name, int ver, const char* vername)
     if(ver>1)
         v = vername;
     char buf[strlen(name)+strlen(v)+1+1];
-    strcpy(buf, name);
-    strcat(buf, "@");
-    strcat(buf, v);
+    snprintf(buf, sizeof(buf), "%s@%s", name, v); /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
     return AddDictionnary(my_context->versym, buf);
 }
 
