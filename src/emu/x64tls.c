@@ -142,7 +142,7 @@ static const char* arch_prctl_param(int code)
         case 0x1003: return "ARCH_GET_FS";
         case 0x1004: return "ARCH_GET_GS";
     }
-    sprintf(ret, "0x%x", code);
+    snprintf(ret, sizeof(ret), "0x%x", code); /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
     return ret;
 }
 int my_arch_prctl(x64emu_t *emu, int code, void* addr)

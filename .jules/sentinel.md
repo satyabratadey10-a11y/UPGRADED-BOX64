@@ -62,3 +62,7 @@
 **Vulnerability:** Found multiple instances where `sprintf` was used with small, fixed-size buffers (e.g. 64 or 100 bytes) to format strings containing external input (like the `TMP` or `TMPDIR` environment variables). This allowed a malicious user to cause a stack-based buffer overflow by providing excessively long inputs.
 **Learning:** Legacy C code often relies on `sprintf` and assumes environment variables or paths will fall within "reasonable" bounds, ignoring edge cases or malicious inputs.
 **Prevention:** Always use `snprintf` with properly sized buffers (e.g. `4096` for standard maximum path lengths) when dealing with external inputs to ensure bounds checking and prevent stack corruption.
+## 2024-11-20 - [SECURITY] Replace unbounded sprintf with snprintf
+ **Vulnerability:** Use of `sprintf` with fixed-size buffers in `src/emu/x64tls.c` potentially leading to buffer overflows.
+ **Learning:** Legacy code combined `sprintf` with fixed-size arrays without bounds checking which is error-prone.
+ **Prevention:** Use `snprintf` with properly sized buffers to cleanly and safely handle strings, ensuring bounds checking is strictly enforced.
