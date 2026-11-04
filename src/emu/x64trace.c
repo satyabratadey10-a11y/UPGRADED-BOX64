@@ -215,8 +215,8 @@ const char* DecodeX64Trace(zydis_dec_t* dec, uintptr_t p, int withhex)
         buff[0] = '\0';
         if (withhex) {
             for (int i = 0; i < dec->instruction.length; ++i) {
-                sprintf(tmp, "%02X ", *((unsigned char*)p + i));
-                strcat(buff, tmp);
+                snprintf(tmp, sizeof(tmp), "%02X ", *((unsigned char*)p + i)); /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
+                strncat(buff, tmp, sizeof(buff) - strlen(buff) - 1);
             }
         }
 #ifndef ZYDIS3
@@ -230,8 +230,8 @@ const char* DecodeX64Trace(zydis_dec_t* dec, uintptr_t p, int withhex)
         if (withhex) {
             char tmp[10];
             for (int i = 0; i < 15; ++i) {
-                sprintf(tmp, "%02X ", *((unsigned char*)p + i));
-                strcat(buff, tmp);
+                snprintf(tmp, sizeof(tmp), "%02X ", *((unsigned char*)p + i)); /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */
+                strncat(buff, tmp, sizeof(buff) - strlen(buff) - 1);
             }
         }
     }
