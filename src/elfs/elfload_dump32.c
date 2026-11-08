@@ -68,7 +68,7 @@ static const char* DumpDynamic(Elf32_Dyn *s) {
             return "DT_NULL: End Dynamic Section";
         #define GO(A, Add) \
         case A:     \
-            sprintf(buff, #A " %s=0x%X", (Add)?"Addr":"Val", (Add)?s->d_un.d_ptr:s->d_un.d_val); \
+            snprintf(buff, sizeof(buff), #A " %s=0x%X", (Add)?"Addr":"Val", (Add)?s->d_un.d_ptr:s->d_un.d_val); /* SECURITY: replaced unsafe sprintf - UPGRADED-BOX64 */ \
             break
             GO(DT_NEEDED, 0);
             GO(DT_PLTRELSZ, 0);
